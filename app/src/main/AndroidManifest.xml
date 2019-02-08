@@ -16,7 +16,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ListingActivity"></activity>
+        <activity android:name=".ListingActivity" />
+        <activity
+            android:name=".TestingActivity"
+            android:label="@string/title_activity_testing"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

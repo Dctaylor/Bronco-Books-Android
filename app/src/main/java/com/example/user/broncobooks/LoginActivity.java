@@ -20,4 +20,10 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
 
     }
+
+    public void onTabbed(View view){
+        Intent intent = new Intent(this,TestingActivity.class);
+        Log.i(DEBUG_TAG,"Tabbedd button pressed");
+        startActivity(intent);
+    }
 }

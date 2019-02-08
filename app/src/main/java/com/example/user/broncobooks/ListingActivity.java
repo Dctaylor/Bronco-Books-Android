@@ -13,6 +13,5 @@ public class ListingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listing);
 
-        recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
     }
 }
