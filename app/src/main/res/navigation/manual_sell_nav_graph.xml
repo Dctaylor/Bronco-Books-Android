@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/manual_Sell_Form">
+    <fragment
+        android:id="@+id/manual_Sell_Form"
+        android:name="com.example.user.broncobooks.Manual_Sell_Form"
+        android:label="fragment_manual__sell__form"
+        tools:layout="@layout/fragment_manual__sell__form" />
+</navigation>

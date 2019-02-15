@@ -1,6 +1,7 @@
 package com.example.user.broncobooks;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -29,6 +30,7 @@ public class SellFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     private Button barButt;
+    private Button manBtn;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -78,6 +80,21 @@ public class SellFragment extends Fragment {
                 Log.i(DEBUG_TAG,"Button works");
             }
         });
+
+        manBtn = (Button)view.findViewById(R.id.manualButton);
+
+        manBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onManBtn(v);
+            }
+        });
+    }
+
+    public void onManBtn(View view){
+        Intent intent = new Intent(getActivity(), ManualSellActivity.class);
+        Log.i(DEBUG_TAG,"Manual Entry button pressed");
+        getActivity().startActivity(intent);
     }
 
     @Override
