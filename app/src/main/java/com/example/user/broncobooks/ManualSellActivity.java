@@ -1,5 +1,6 @@
 package com.example.user.broncobooks;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -9,7 +10,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-public class ManualSellActivity extends AppCompatActivity {
+public class ManualSellActivity extends AppCompatActivity implements Manual_Sell_Form.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,4 +32,8 @@ public class ManualSellActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onFragmentInteraction(Uri uri){
+
+    }
 }

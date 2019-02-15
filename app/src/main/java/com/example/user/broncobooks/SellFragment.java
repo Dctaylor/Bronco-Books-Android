@@ -23,7 +23,7 @@ import android.widget.Button;
  * create an instance of this fragment.
  */
 public class SellFragment extends Fragment {
-    private static final String DEBUG_TAG = "Sell Frag";
+    private static final String DEBUG_TAG = "Sell_Frag";
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -94,7 +94,7 @@ public class SellFragment extends Fragment {
     public void onManBtn(View view){
         Intent intent = new Intent(getActivity(), ManualSellActivity.class);
         Log.i(DEBUG_TAG,"Manual Entry button pressed");
-        getActivity().startActivity(intent);
+        startActivity(intent);
     }
 
     @Override
