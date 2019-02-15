@@ -12,7 +12,7 @@
 
         <activity
             android:name=".ManualSellActivity"
-            android:label="@string/title_activity_manual_sell"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".TestingActivity">
         </activity>

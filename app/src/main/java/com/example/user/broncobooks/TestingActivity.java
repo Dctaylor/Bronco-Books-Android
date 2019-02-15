@@ -115,13 +115,13 @@ public class TestingActivity extends AppCompatActivity implements BuyFragment.On
             Fragment fragment = null;
             switch(position){
                 case 0:
-                    fragment = new BuyFragment();
+                    fragment = BuyFragment.newInstance("","");
                     break;
                 case 1:
-                    fragment = new SellFragment();
+                    fragment = SellFragment.newInstance("","");
                     break;
                 case 2:
-                    fragment = new ProfileFragment();
+                    fragment = ProfileFragment.newInstance("","");
                     break;
             }
             return fragment;
