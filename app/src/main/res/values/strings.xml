@@ -16,4 +16,5 @@
         <item>Check</item>
     </string-array>
     <string name="paymentPrompt">Preferred Payment Method</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
