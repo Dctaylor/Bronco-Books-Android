@@ -1,6 +1,7 @@
 package com.example.user.broncobooks;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -141,8 +142,8 @@ public class Manual_Sell_Form extends Fragment {
                 binding = bookBinding.getText().toString();
                 price = bookPrice.getText().toString();
                 pages = Integer.valueOf(bookPages.getText().toString());
-                showToast(title);
-
+                Intent intent = new Intent(getActivity(), TestingActivity.class);
+                startActivity(intent);
             }
         });
     }

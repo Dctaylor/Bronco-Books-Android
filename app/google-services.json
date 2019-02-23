@@ -15,11 +15,27 @@
       },
       "oauth_client": [
         {
+          "client_id": "102765438504-kttkv67cg7sj9k4v41gchak8jq54rnse.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.user.broncobooks",
+            "certificate_hash": "bc44b9660561f3432f98127e022cb4ced325f536"
+          }
+        },
+        {
           "client_id": "102765438504-nptn9fvvf7a9lguv2e98g7jauk12eu65.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.user.broncobooks",
             "certificate_hash": "5c7f92ccd382599bb6703274aff51c10fa87c42c"
+          }
+        },
+        {
+          "client_id": "102765438504-1hg001mmjfjft8sdks8br4gs4i8p9miu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.user.broncobooks",
+            "certificate_hash": "61b3687ac0c76cfe35afeab1bcda5e6d8efbbbe0"
           }
         },
         {
