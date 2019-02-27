@@ -6,12 +6,23 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static android.support.constraint.Constraints.TAG;
 
 
 /**
@@ -28,7 +39,10 @@ public class BuyFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    private RecyclerView rView;
+    private List<Listing> mListing;
     private DatabaseReference dbReference;
+    private ListingAdapter adapter;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -71,6 +85,45 @@ public class BuyFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         dbReference = FirebaseDatabase.getInstance().getReference();
+        rView = view.findViewById(R.id.recycler);
+
+        mListing = new ArrayList<Listing>();
+        dbReference.child("listings").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot s:dataSnapshot.getChildren()){
+                    Listing listing = s.getValue(Listing.class);
+                    mListing.add(listing);
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        adapter = new ListingAdapter(mListing);
+        rView.setAdapter(adapter);
+        rView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+//        dbReference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                // This method is called once with the initial value and again
+//                // whenever data at this location is updated.
+//                String value = dataSnapshot.getValue(String.class);
+//                Log.d(TAG, "Value is: " + value);
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError error) {
+//                // Failed to read value
+//                Log.w(TAG, "Failed to read value.", error.toException());
+//            }
+//        });
+
+
     }
 
     @Override
