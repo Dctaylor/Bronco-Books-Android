@@ -48,7 +48,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ViewHold
     public int getItemCount() {
         if(mList==null)
             return -1;
-        return mList.size();
+        return mList.size()
     }
 
     public void onBindViewHolder(@NonNull ListingAdapter.ViewHolder viewHolder, int i) {

@@ -1,0 +1,78 @@
+{
+  "project_info": {
+    "project_number": "102765438504",
+    "firebase_url": "https://bronco-books.firebaseio.com",
+    "project_id": "bronco-books",
+    "storage_bucket": "bronco-books.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:102765438504:android:7f141ace47f1813a",
+        "android_client_info": {
+          "package_name": "com.example.user.broncobooks"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "102765438504-kttkv67cg7sj9k4v41gchak8jq54rnse.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.user.broncobooks",
+            "certificate_hash": "bc44b9660561f3432f98127e022cb4ced325f536"
+          }
+        },
+        {
+          "client_id": "102765438504-nptn9fvvf7a9lguv2e98g7jauk12eu65.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.user.broncobooks",
+            "certificate_hash": "5c7f92ccd382599bb6703274aff51c10fa87c42c"
+          }
+        },
+        {
+          "client_id": "102765438504-1hg001mmjfjft8sdks8br4gs4i8p9miu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.user.broncobooks",
+            "certificate_hash": "61b3687ac0c76cfe35afeab1bcda5e6d8efbbbe0"
+          }
+        },
+        {
+          "client_id": "102765438504-f9969638tqc85jc03hsoikeft1t1c9tq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCzES9Try1fGjX2FPxBx7-3EE6BkBOFlQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "102765438504-f9969638tqc85jc03hsoikeft1t1c9tq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "102765438504-ej1ulmu7rpjgducrgr8iu6jh2mr58kvf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "vineet0713.Bronco-Books"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
