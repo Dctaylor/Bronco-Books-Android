@@ -1,6 +1,8 @@
 package com.example.user.broncobooks;
 
-public class Listing {
+import java.io.Serializable;
+
+public class Listing implements Serializable {
     public Textbook textbook;
     public User seller;
     public double price;

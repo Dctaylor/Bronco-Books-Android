@@ -1,6 +1,7 @@
 package com.example.user.broncobooks;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,6 +40,7 @@ public class BuyFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    public static final String PASS_KEY = "KEY";
 
     private RecyclerView rView;
     private List<Listing> mListing;
@@ -87,13 +90,23 @@ public class BuyFragment extends Fragment {
         dbReference = FirebaseDatabase.getInstance().getReference();
         rView = view.findViewById(R.id.recycler);
 
+        ListingAdapter.RecyclerItemListener listener = new ListingAdapter.RecyclerItemListener(){
+            @Override
+            public void onClick(View view, int pos) {
+                Intent intent = new Intent(getActivity(),ListingDetailActivity.class);
+                intent.putExtra(PASS_KEY,mListing.get(pos));
+                startActivity(intent);
+            }
+        };
+
         mListing = new ArrayList<Listing>();
         dbReference.child("listings").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot s:dataSnapshot.getChildren()){
                     Listing listing = s.getValue(Listing.class);
-                    mListing.add(listing);
+                    if(listing.onSale)
+                        mListing.add(listing);
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -103,32 +116,16 @@ public class BuyFragment extends Fragment {
 
             }
         });
-        adapter = new ListingAdapter(mListing);
+        adapter = new ListingAdapter(mListing,listener);
         rView.setAdapter(adapter);
         rView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
-//        dbReference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                // This method is called once with the initial value and again
-//                // whenever data at this location is updated.
-//                String value = dataSnapshot.getValue(String.class);
-//                Log.d(TAG, "Value is: " + value);
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError error) {
-//                // Failed to read value
-//                Log.w(TAG, "Failed to read value.", error.toException());
-//            }
-//        });
 
 
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_buy, container, false);
     }

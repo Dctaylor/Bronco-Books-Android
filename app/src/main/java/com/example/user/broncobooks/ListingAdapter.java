@@ -17,18 +17,36 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ViewHold
     private String TAG = "AdapterList";
     private List<Listing> mList;
 
-    public ListingAdapter(List<Listing> list){
+    private RecyclerItemListener mListen;
+
+    public ListingAdapter(List<Listing> list, RecyclerItemListener l){
+        mListen = l;
         mList = list;
     }
-    public class ViewHolder extends RecyclerView.ViewHolder{
+
+    public interface RecyclerItemListener{
+        void onClick(View view, int pos);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        private RecyclerItemListener listen;
+
         public TextView title;
         public TextView author;
         public TextView price;
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView, RecyclerItemListener listener) {
             super(itemView);
+            listen = listener;
+            itemView.setOnClickListener(this);
+
             title = (TextView)itemView.findViewById(R.id.titleView);
             author = (TextView)itemView.findViewById(R.id.authorView);
             price = (TextView)itemView.findViewById(R.id.priceView);
+        }
+
+        @Override
+        public void onClick(View v) {
+            listen.onClick(v,getAdapterPosition());
         }
     }
     @NonNull
@@ -37,9 +55,9 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ViewHold
         Context context = viewGroup.getContext();
         LayoutInflater inflate = LayoutInflater.from(context);
 
-        View listingView = inflate.inflate(R.layout.layout_recycler,viewGroup,false);
+        View listingView = inflate.inflate(R.layout.layout_recycler_buy,viewGroup,false);
 
-        ViewHolder hold = new ViewHolder(listingView);
+        ViewHolder hold = new ViewHolder(listingView,mListen);
 
         return hold;
     }
@@ -48,7 +66,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ViewHold
     public int getItemCount() {
         if(mList==null)
             return -1;
-        return mList.size()
+        return mList.size();
     }
 
     public void onBindViewHolder(@NonNull ListingAdapter.ViewHolder viewHolder, int i) {

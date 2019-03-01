@@ -9,10 +9,12 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -36,6 +38,8 @@ public class ProfileFragment extends Fragment {
     private String mParam2;
 
     Button logout;
+    RecyclerView recView;
+    TextView name,email;
     FirebaseAuth mAuth;
     FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -90,6 +94,9 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         logout = (Button) getView().findViewById(R.id.logOutBtn);
+        name = (TextView) getView().findViewById(R.id.nameView);
+        email = (TextView) getView().findViewById(R.id.emailView);
+
         mAuth = FirebaseAuth.getInstance();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -109,6 +116,9 @@ public class ProfileFragment extends Fragment {
                 LoginActivity.mGoogleSignInClient.signOut();
             }
         });
+
+        name.setText(mAuth.getCurrentUser().getDisplayName().toString());
+        email.setText(mAuth.getCurrentUser().getEmail().toString());
     }
 
     // TODO: Rename method, update argument and hook method into UI event

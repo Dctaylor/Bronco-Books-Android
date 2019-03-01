@@ -1,8 +1,9 @@
 package com.example.user.broncobooks;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Textbook {
+public class Textbook implements Serializable {
     public String title;
     public String subtitle;
     public ArrayList<String> authors;
