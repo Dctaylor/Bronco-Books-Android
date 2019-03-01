@@ -20,13 +20,28 @@
             android:textSize="40sp"
             android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/bookTitleInput"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Title (shortened)"
-            android:inputType="text" />
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/bookTitleInput"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Title"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/bookSubtitleInput"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="Subtitle"
+                android:inputType="textPersonName" />
+        </LinearLayout>
 
         <EditText
             android:id="@+id/bookAuthorsInput"
@@ -74,21 +89,6 @@
                 android:inputType="text" />
 
             <EditText
-                android:id="@+id/bookFormatInput"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:hint="Format"
-                android:inputType="text" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <EditText
                 android:id="@+id/bookEditionInput"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -96,6 +96,13 @@
                 android:ems="10"
                 android:hint="Edition"
                 android:inputType="text" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/bookPagesInput"
