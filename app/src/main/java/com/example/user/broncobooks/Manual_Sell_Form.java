@@ -3,8 +3,11 @@ package com.example.user.broncobooks;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +18,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 
 /**
@@ -35,15 +50,16 @@ public class Manual_Sell_Form extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    String title, authors, publishDate, publisher, language, format, edition, binding, price, payment;
+    String title, author, publishDate, publisher, language, subtitle, edition, binding, payment;
     int pages;
+    double price;
 
     EditText bookTitle;
     EditText bookAuthors;
     EditText bookPublishDate;
     EditText bookPublisher;
     EditText bookLanguage;
-    EditText bookFormat;
+    EditText bookSubtitle;
     EditText bookEdition;
     EditText bookBinding;
     EditText bookPrice;
@@ -54,6 +70,7 @@ public class Manual_Sell_Form extends Fragment {
     Button upload;
 
     private OnFragmentInteractionListener mListener;
+    private DatabaseReference dbReference;
 
     public Manual_Sell_Form() {
         // Required empty public constructor
@@ -116,12 +133,16 @@ public class Manual_Sell_Form extends Fragment {
             }
         });
 
+        dbReference = FirebaseDatabase.getInstance().getReference();
+
+
+
         bookTitle = (EditText) getView().findViewById(R.id.bookTitleInput);
         bookAuthors = (EditText) getView().findViewById(R.id.bookAuthorsInput);
         bookPublishDate = (EditText) getView().findViewById(R.id.bookPublishDateInput);
         bookPublisher = (EditText) getView().findViewById(R.id.bookPublisherInput);
         bookLanguage = (EditText) getView().findViewById(R.id.bookLanguageInput);
-        bookFormat = (EditText) getView().findViewById(R.id.bookFormatInput);
+        bookSubtitle = (EditText) getView().findViewById(R.id.bookSubtitleInput);
         bookEdition = (EditText) getView().findViewById(R.id.bookEditionInput);
         bookBinding = (EditText) getView().findViewById(R.id.bookBindingInput);
         bookPrice = (EditText) getView().findViewById(R.id.bookPriceInput);
@@ -130,18 +151,36 @@ public class Manual_Sell_Form extends Fragment {
         submit = (Button) getView().findViewById(R.id.bookSubmitBtn);
         upload = (Button) getView().findViewById(R.id.bookPhotosBtn);
         submit.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
                 title = bookTitle.getText().toString();
-                authors = bookAuthors.getText().toString();
+                //Split authors from 1 string into an ArrayList
+                author = bookAuthors.getText().toString();
+                ArrayList<String> authors = new ArrayList<String>(Arrays.asList(author.split("\\s*,\\s*")));
+
                 publishDate = bookPublishDate.getText().toString();
                 publisher = bookPublisher.getText().toString();
                 language = bookLanguage.getText().toString();
-                format = bookFormat .getText().toString();
+                subtitle = bookSubtitle.getText().toString();
                 edition = bookEdition.getText().toString();
                 binding = bookBinding.getText().toString();
-                price = bookPrice.getText().toString();
+                price = Double.valueOf(bookPrice.getText().toString());
                 pages = Integer.valueOf(bookPages.getText().toString());
+                Textbook newBook = new Textbook(title, subtitle, authors, publisher, publishDate, language, edition, pages, binding);
+
+                //Getting Epoch Time
+                Instant instant = Instant.now();
+                int seconds = (int) instant.getEpochSecond();
+
+                //Getting current User
+                FirebaseUser tempUser = FirebaseAuth.getInstance().getCurrentUser();
+                User user = new User(tempUser.getEmail(), tempUser.getDisplayName());
+
+                Listing newListing = new Listing(newBook, user, price, payment, seconds);
+
+                //add to database
+                dbReference.child("listings").push().setValue(newListing);
                 Intent intent = new Intent(getActivity(), TestingActivity.class);
                 startActivity(intent);
             }
