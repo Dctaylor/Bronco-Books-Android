@@ -22,6 +22,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static android.support.constraint.Constraints.TAG;
@@ -108,6 +110,7 @@ public class BuyFragment extends Fragment {
                     if(listing.onSale)
                         mListing.add(listing);
                 }
+
                 adapter.notifyDataSetChanged();
             }
 

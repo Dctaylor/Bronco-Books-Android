@@ -154,10 +154,15 @@ public class Manual_Sell_Form extends Fragment {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
+
                 title = bookTitle.getText().toString();
                 //Split authors from 1 string into an ArrayList
                 author = bookAuthors.getText().toString();
-                ArrayList<String> authors = new ArrayList<String>(Arrays.asList(author.split("\\s*,\\s*")));
+                ArrayList<String> authors = new ArrayList<String>(Arrays.asList(author.split(",")));
+                for(int i = 0; i < authors.size(); i++) {
+                    authors.set(i,authors.get(i).trim());
+                }
+
 
                 publishDate = bookPublishDate.getText().toString();
                 publisher = bookPublisher.getText().toString();
@@ -165,13 +170,14 @@ public class Manual_Sell_Form extends Fragment {
                 subtitle = bookSubtitle.getText().toString();
                 edition = bookEdition.getText().toString();
                 binding = bookBinding.getText().toString();
+
                 price = Double.valueOf(bookPrice.getText().toString());
                 pages = Integer.valueOf(bookPages.getText().toString());
                 Textbook newBook = new Textbook(title, subtitle, authors, publisher, publishDate, language, edition, pages, binding);
 
                 //Getting Epoch Time
-                Instant instant = Instant.now();
-                int seconds = (int) instant.getEpochSecond();
+                int seconds = (int)System.currentTimeMillis()/1000;
+
 
                 //Getting current User
                 FirebaseUser tempUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -179,8 +185,10 @@ public class Manual_Sell_Form extends Fragment {
 
                 Listing newListing = new Listing(newBook, user, price, payment, seconds);
 
+
                 //add to database
                 dbReference.child("listings").push().setValue(newListing);
+                Toast.makeText(v.getContext(),"Listing added",Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getActivity(), TestingActivity.class);
                 startActivity(intent);
             }

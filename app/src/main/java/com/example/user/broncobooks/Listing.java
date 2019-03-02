@@ -24,5 +24,6 @@ public class Listing implements Serializable {
         this.price = price;
         this.paymentMethod = paymentMethod;
         this.epochTimePosted = epochTimePosted;
+        this.onSale = true;
     }
 }

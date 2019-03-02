@@ -64,9 +64,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        if(mList==null)
-            return -1;
-        return mList.size();
+        return (mList==null) ? -1 : mList.size();
     }
 
     public void onBindViewHolder(@NonNull ListingAdapter.ViewHolder viewHolder, int i) {
@@ -74,7 +72,16 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ViewHold
 
         Log.i(TAG,"View made for "+Integer.toString(i));
         viewHolder.title.setText(listing.textbook.title);
-        viewHolder.author.setText(listing.textbook.authors.get(0));//TODO, display multiple authors
+        String authors = "";
+        for(String a : listing.textbook.authors){
+            authors = authors + a + ", ";
+        }
+
+        if(authors.length() != 0) {
+            authors = authors.substring(0, authors.length() - 2);
+        }
+
+        viewHolder.author.setText(authors);//TODO, display multiple authors
         viewHolder.price.setText("$" + Double.toString(listing.price));
     }
 }

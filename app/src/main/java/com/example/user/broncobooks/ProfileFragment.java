@@ -9,6 +9,7 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,14 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -42,6 +51,10 @@ public class ProfileFragment extends Fragment {
     TextView name,email;
     FirebaseAuth mAuth;
     FirebaseAuth.AuthStateListener mAuthListener;
+
+    private DatabaseReference mDBRef;
+    ProfileListingAdapter mAdapter;
+    List<Listing> mListing;
 
     private OnFragmentInteractionListener mListener;
 
@@ -92,12 +105,16 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mListing = new ArrayList<Listing>();
 
-        logout = (Button) getView().findViewById(R.id.logOutBtn);
-        name = (TextView) getView().findViewById(R.id.nameView);
-        email = (TextView) getView().findViewById(R.id.emailView);
+        logout = (Button) view.findViewById(R.id.logOutBtn);
+        name = (TextView) view.findViewById(R.id.nameView);
+        email = (TextView) view.findViewById(R.id.emailView);
+        recView = (RecyclerView) view.findViewById(R.id.sellRecycleView);
 
         mAuth = FirebaseAuth.getInstance();
+        mDBRef = FirebaseDatabase.getInstance().getReference();
+
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -117,8 +134,30 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        name.setText(mAuth.getCurrentUser().getDisplayName().toString());
-        email.setText(mAuth.getCurrentUser().getEmail().toString());
+        mDBRef.child("listings").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot s:dataSnapshot.getChildren()){
+                    Listing listing = s.getValue(Listing.class);
+                    if(listing.seller.displayName.compareTo(mAuth.getCurrentUser().getDisplayName()) == 0)
+                        mListing.add(listing);
+                }
+
+                mAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        mAdapter = new ProfileListingAdapter(mListing);
+        recView.setAdapter(mAdapter);
+        recView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+        name.setText(mAuth.getCurrentUser().getDisplayName());
+        email.setText(mAuth.getCurrentUser().getEmail());
     }
 
     // TODO: Rename method, update argument and hook method into UI event
