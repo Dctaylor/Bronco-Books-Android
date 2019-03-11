@@ -2,9 +2,11 @@ package com.example.user.broncobooks;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -16,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -69,8 +72,14 @@ public class Manual_Sell_Form extends Fragment {
     Button submit;
     Button upload;
 
+    ImageView pic1;
+    ImageView pic2;
+    ImageView pic3;
+    ImageView pic4;
+
     private OnFragmentInteractionListener mListener;
     private DatabaseReference dbReference;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
 
     public Manual_Sell_Form() {
         // Required empty public constructor
@@ -108,6 +117,32 @@ public class Manual_Sell_Form extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_manual__sell__form, container, false);
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == getActivity().RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            if(pic1.getDrawable() == null) {
+                pic1.setImageBitmap(imageBitmap);
+            } else if(pic2.getDrawable() == null) {
+                pic2.setImageBitmap(imageBitmap);
+            } else if(pic3.getDrawable() == null) {
+                pic3.setImageBitmap(imageBitmap);
+            } else if(pic4.getDrawable() == null) {
+                pic4.setImageBitmap(imageBitmap);
+            } else {
+                showToast("Maximum number of allowed pictures reached.");
+            }
+        }
     }
 
     @Override
@@ -148,8 +183,24 @@ public class Manual_Sell_Form extends Fragment {
         bookPrice = (EditText) getView().findViewById(R.id.bookPriceInput);
         bookPages = (EditText) getView().findViewById(R.id.bookPagesInput);
 
+        pic1 = (ImageView) getView().findViewById(R.id.formPic1);
+        pic2 = (ImageView) getView().findViewById(R.id.formPic2);
+        pic3 = (ImageView) getView().findViewById(R.id.formPic3);
+        pic4 = (ImageView) getView().findViewById(R.id.formPic4);
+
+
         submit = (Button) getView().findViewById(R.id.bookSubmitBtn);
         upload = (Button) getView().findViewById(R.id.bookPhotosBtn);
+
+        upload.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(View v) {
+                dispatchTakePictureIntent();
+            }
+        });
+
+
         submit.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -193,18 +244,18 @@ public class Manual_Sell_Form extends Fragment {
                 startActivity(intent);
             }
         });
+
+
     }
+
+
+
+
 
     private void showToast(String text) {
         Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onAttach(Context context) {
