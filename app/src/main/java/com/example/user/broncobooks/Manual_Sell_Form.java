@@ -248,7 +248,7 @@ public class Manual_Sell_Form extends Fragment {
                 Textbook newBook = new Textbook(title, subtitle, authors, publisher, publishDate, language, edition, pages, binding);
 
                 //Getting Epoch Time
-                int seconds = (int)System.currentTimeMillis()/1000;
+                int seconds = (int)(System.currentTimeMillis()/1000);
 
 
                 //Getting current User
