@@ -3,6 +3,7 @@ package com.example.user.broncobooks;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,15 +23,20 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.internal.Storage;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
-import java.time.Instant;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -76,9 +82,12 @@ public class Manual_Sell_Form extends Fragment {
     ImageView pic2;
     ImageView pic3;
     ImageView pic4;
+    ImageView pics[] = new ImageView[4];
 
     private OnFragmentInteractionListener mListener;
     private DatabaseReference dbReference;
+    FirebaseStorage storage;
+    StorageReference storageReference;
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     public Manual_Sell_Form() {
@@ -131,7 +140,14 @@ public class Manual_Sell_Form extends Fragment {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == getActivity().RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-            if(pic1.getDrawable() == null) {
+            for(int i = 0; i < 4; i++) {
+                if(pics[i].getDrawable() == null) {
+                    pics[i].setImageBitmap(imageBitmap);
+                    return;
+                }
+            }
+            showToast("Maximum number of allowed pictures reached.");
+            /*if(pic1.getDrawable() == null) {
                 pic1.setImageBitmap(imageBitmap);
             } else if(pic2.getDrawable() == null) {
                 pic2.setImageBitmap(imageBitmap);
@@ -141,7 +157,7 @@ public class Manual_Sell_Form extends Fragment {
                 pic4.setImageBitmap(imageBitmap);
             } else {
                 showToast("Maximum number of allowed pictures reached.");
-            }
+            }*/
         }
     }
 
@@ -169,7 +185,8 @@ public class Manual_Sell_Form extends Fragment {
         });
 
         dbReference = FirebaseDatabase.getInstance().getReference();
-
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
 
 
         bookTitle = (EditText) getView().findViewById(R.id.bookTitleInput);
@@ -187,6 +204,10 @@ public class Manual_Sell_Form extends Fragment {
         pic2 = (ImageView) getView().findViewById(R.id.formPic2);
         pic3 = (ImageView) getView().findViewById(R.id.formPic3);
         pic4 = (ImageView) getView().findViewById(R.id.formPic4);
+        pics[0] = pic1;
+        pics[1] = pic2;
+        pics[2] = pic3;
+        pics[3] = pic4;
 
 
         submit = (Button) getView().findViewById(R.id.bookSubmitBtn);
@@ -237,8 +258,44 @@ public class Manual_Sell_Form extends Fragment {
                 Listing newListing = new Listing(newBook, user, price, payment, seconds);
 
 
+
+
                 //add to database
-                dbReference.child("listings").push().setValue(newListing);
+                String key = dbReference.child("listings").push().getKey();
+                String listingPath = "/listings/" + key;
+                dbReference.child(listingPath).setValue(newListing);
+
+
+                //Prepare Images for upload
+                Bitmap bitmap;
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                StorageReference path;
+                String imagePath;
+                for(int i = 0; i < 4; i++) {
+                    if(pics[i].getDrawable() != null) {
+                        pics[i].setDrawingCacheEnabled(true);
+                        pics[i].buildDrawingCache();
+                        bitmap = ((BitmapDrawable)pics[i].getDrawable()).getBitmap();
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        byte[] data = baos.toByteArray();
+                        imagePath = "images/" + key + "_" + i;
+                        path =  storageReference.child(imagePath);
+                        UploadTask uploadTask = path.putBytes(data);
+                        uploadTask.addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                // Handle unsuccessful uploads
+                            }
+                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                                // ...
+                            }
+                        });
+                    }
+                }
+
                 Toast.makeText(v.getContext(),"Listing added",Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getActivity(), TestingActivity.class);
                 startActivity(intent);
@@ -247,9 +304,6 @@ public class Manual_Sell_Form extends Fragment {
 
 
     }
-
-
-
 
 
     private void showToast(String text) {
