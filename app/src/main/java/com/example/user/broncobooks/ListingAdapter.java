@@ -82,6 +82,6 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ViewHold
         }
 
         viewHolder.author.setText(authors);//TODO, display multiple authors
-        viewHolder.price.setText("$" + Double.toString(listing.price));
+        viewHolder.price.setText(String.format("$%2.2f",listing.price));
     }
 }

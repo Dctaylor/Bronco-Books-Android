@@ -13,20 +13,31 @@ import java.util.List;
 
 public class ProfileListingAdapter extends RecyclerView.Adapter<ProfileListingAdapter.ViewHolder>{
     private List<Listing> mListings;
-    public ProfileListingAdapter(List<Listing> l){
+    private ListingAdapter.RecyclerItemListener mListen;
+
+    public ProfileListingAdapter(List<Listing> l, ListingAdapter.RecyclerItemListener listen){
         mListings = l;
+        mListen = listen;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public TextView title, price, sold;
+        private ListingAdapter.RecyclerItemListener listen;
 
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
+        public ViewHolder(@NonNull View item, ListingAdapter.RecyclerItemListener listener) {
+            super(item);
+
             title = (TextView)itemView.findViewById(R.id.titleView);
             price = (TextView)itemView.findViewById(R.id.priceView);
             sold = (TextView)itemView.findViewById(R.id.soldView);
         }
+
+        @Override
+        public void onClick(View v) {
+            listen.onClick(v,getAdapterPosition());
+        }
     }
+
 
     @NonNull
     @Override
@@ -36,7 +47,7 @@ public class ProfileListingAdapter extends RecyclerView.Adapter<ProfileListingAd
 
         View listingView = inflate.inflate(R.layout.layout_recycler_profile,viewGroup,false);
 
-        ProfileListingAdapter.ViewHolder hold = new ProfileListingAdapter.ViewHolder(listingView);
+        ProfileListingAdapter.ViewHolder hold = new ProfileListingAdapter.ViewHolder(listingView,mListen);
 
         return hold;
     }
@@ -46,7 +57,7 @@ public class ProfileListingAdapter extends RecyclerView.Adapter<ProfileListingAd
         Listing list = mListings.get(i);
 
         viewHolder.title.setText(list.textbook.title);
-        viewHolder.price.setText("$"+Double.toString(list.price));
+        viewHolder.price.setText(String.format("$%2.2f",list.price));
         viewHolder.sold.setText(list.onSale?"On Sale" : "Sold");
     }
 

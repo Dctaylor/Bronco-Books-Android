@@ -54,7 +54,6 @@ public class BuyFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-
     public BuyFragment() {
         // Required empty public constructor
     }
@@ -95,7 +94,7 @@ public class BuyFragment extends Fragment {
         ListingAdapter.RecyclerItemListener listener = new ListingAdapter.RecyclerItemListener(){
             @Override
             public void onClick(View view, int pos) {
-                Intent intent = new Intent(getActivity(),ListingDetailActivity.class);
+                Intent intent = new Intent(getActivity(),BuyDetail.class);
                 intent.putExtra(PASS_KEY,mListing.get(pos));
                 startActivity(intent);
             }
@@ -107,6 +106,7 @@ public class BuyFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot s:dataSnapshot.getChildren()){
                     Listing listing = s.getValue(Listing.class);
+                    listing.id = s.getKey();
                     if(listing.onSale)
                         mListing.add(listing);
                 }

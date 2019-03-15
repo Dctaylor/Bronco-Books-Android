@@ -45,12 +45,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".ListingActivity" />
+        <activity android:name=".BuyDetail" />
+        <activity android:name=".ProfileDetail" />
         <activity
             android:name=".TestingActivity"
             android:label="@string/title_activity_testing"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ListingDetailActivity"
-            android:parentActivityName=".TestingActivity"></activity>
     </application>
 
 </manifest>

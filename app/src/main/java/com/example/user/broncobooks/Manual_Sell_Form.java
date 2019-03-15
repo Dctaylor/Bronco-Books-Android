@@ -255,7 +255,7 @@ public class Manual_Sell_Form extends Fragment {
                 FirebaseUser tempUser = FirebaseAuth.getInstance().getCurrentUser();
                 User user = new User(tempUser.getEmail(), tempUser.getDisplayName());
 
-                Listing newListing = new Listing(newBook, user, price, payment, seconds);
+
 
 
 
@@ -263,6 +263,7 @@ public class Manual_Sell_Form extends Fragment {
                 //add to database
                 String key = dbReference.child("listings").push().getKey();
                 String listingPath = "/listings/" + key;
+                Listing newListing = new Listing(newBook, user, price, payment, seconds, key);
                 dbReference.child(listingPath).setValue(newListing);
 
 
@@ -278,7 +279,7 @@ public class Manual_Sell_Form extends Fragment {
                         bitmap = ((BitmapDrawable)pics[i].getDrawable()).getBitmap();
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         byte[] data = baos.toByteArray();
-                        imagePath = "images/" + key + "_" + i;
+                        imagePath = "images/" + key + "_" + i + ".jpeg";
                         path =  storageReference.child(imagePath);
                         UploadTask uploadTask = path.putBytes(data);
                         uploadTask.addOnFailureListener(new OnFailureListener() {

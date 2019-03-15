@@ -18,12 +18,13 @@ public class Listing implements Serializable {
         // default constructor needed for calls to DataSnapshot.getValue(Listing.class)
     }
 
-    public Listing(Textbook textbook, User seller, double price, String paymentMethod, int epochTimePosted) {
+    public Listing(Textbook textbook, User seller, double price, String paymentMethod, int epochTimePosted, String id) {
         this.textbook = textbook;
         this.seller = seller;
         this.price = price;
         this.paymentMethod = paymentMethod;
         this.epochTimePosted = epochTimePosted;
         this.onSale = true;
+        this.id = id;
     }
 }
