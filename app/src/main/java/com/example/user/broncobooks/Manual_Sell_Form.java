@@ -278,7 +278,7 @@ public class Manual_Sell_Form extends Fragment {
                         bitmap = ((BitmapDrawable)pics[i].getDrawable()).getBitmap();
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         byte[] data = baos.toByteArray();
-                        imagePath = "images/" + key + "_" + i;
+                        imagePath = "images/" + key + "_" + i + ".jpeg";
                         path =  storageReference.child(imagePath);
                         UploadTask uploadTask = path.putBytes(data);
                         uploadTask.addOnFailureListener(new OnFailureListener() {
