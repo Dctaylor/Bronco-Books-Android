@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,6 +49,7 @@ public class BuyFragment extends Fragment {
     private List<Listing> mListing;
     private DatabaseReference dbReference;
     private ListingAdapter adapter;
+    private FirebaseAuth mAuth;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -90,11 +92,16 @@ public class BuyFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         dbReference = FirebaseDatabase.getInstance().getReference();
         rView = view.findViewById(R.id.recycler);
+        mAuth = FirebaseAuth.getInstance();
 
         ListingAdapter.RecyclerItemListener listener = new ListingAdapter.RecyclerItemListener(){
             @Override
             public void onClick(View view, int pos) {
-                Intent intent = new Intent(getActivity(),BuyDetail.class);
+                Intent intent;// = new Intent(getActivity(),BuyDetail.class);
+                if(mAuth.getCurrentUser().getDisplayName().equals(mListing.get(pos).seller.displayName))
+                    intent = new Intent(getActivity(),ProfileDetail.class);
+                else
+                    intent = new Intent(getActivity(),BuyDetail.class);
                 intent.putExtra(PASS_KEY,mListing.get(pos));
                 startActivity(intent);
             }
