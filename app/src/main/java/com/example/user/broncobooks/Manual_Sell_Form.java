@@ -1,17 +1,22 @@
 package com.example.user.broncobooks;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,8 +42,12 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 
 /**
@@ -88,6 +97,7 @@ public class Manual_Sell_Form extends Fragment {
     private DatabaseReference dbReference;
     FirebaseStorage storage;
     StorageReference storageReference;
+    String currentPhotoPath;
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     public Manual_Sell_Form() {
@@ -128,17 +138,71 @@ public class Manual_Sell_Form extends Fragment {
         return inflater.inflate(R.layout.fragment_manual__sell__form, container, false);
     }
 
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(currentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        getActivity().sendBroadcast(mediaScanIntent);
+    }
+
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                        "com.example.user.broncobooks",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+            galleryAddPic();
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == getActivity().RESULT_OK) {
-            Bundle extras = data.getExtras();
+            File imgFile = new File(currentPhotoPath);
+            if(imgFile.exists()) {
+                Bitmap imageBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                for(int i = 0; i < 4; i++) {
+                    if(pics[i].getDrawable() == null) {
+                        pics[i].setImageBitmap(imageBitmap);
+                        return;
+                    }
+                }
+                showToast("Maximum number of allowed pictures reached.");
+            }
+            /*Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             for(int i = 0; i < 4; i++) {
                 if(pics[i].getDrawable() == null) {
@@ -146,18 +210,7 @@ public class Manual_Sell_Form extends Fragment {
                     return;
                 }
             }
-            showToast("Maximum number of allowed pictures reached.");
-            /*if(pic1.getDrawable() == null) {
-                pic1.setImageBitmap(imageBitmap);
-            } else if(pic2.getDrawable() == null) {
-                pic2.setImageBitmap(imageBitmap);
-            } else if(pic3.getDrawable() == null) {
-                pic3.setImageBitmap(imageBitmap);
-            } else if(pic4.getDrawable() == null) {
-                pic4.setImageBitmap(imageBitmap);
-            } else {
-                showToast("Maximum number of allowed pictures reached.");
-            }*/
+            showToast("Maximum number of allowed pictures reached.");*/
         }
     }
 
@@ -226,80 +279,97 @@ public class Manual_Sell_Form extends Fragment {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
+                String message;
 
-                title = bookTitle.getText().toString();
-                //Split authors from 1 string into an ArrayList
-                author = bookAuthors.getText().toString();
-                ArrayList<String> authors = new ArrayList<String>(Arrays.asList(author.split(",")));
-                for(int i = 0; i < authors.size(); i++) {
-                    authors.set(i,authors.get(i).trim());
-                }
+                message = "Are you sure you want to put this listing up for sale?";
+                AlertDialog.Builder builder =  new AlertDialog.Builder(getActivity());
 
+                builder.setTitle("Confirmation");
+                builder.setMessage(message);
 
-                publishDate = bookPublishDate.getText().toString();
-                publisher = bookPublisher.getText().toString();
-                language = bookLanguage.getText().toString();
-                subtitle = bookSubtitle.getText().toString();
-                edition = bookEdition.getText().toString();
-                binding = bookBinding.getText().toString();
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
-                price = Double.valueOf(bookPrice.getText().toString());
-                pages = Integer.valueOf(bookPages.getText().toString());
-                Textbook newBook = new Textbook(title, subtitle, authors, publisher, publishDate, language, edition, pages, binding);
-
-                //Getting Epoch Time
-                int seconds = (int)(System.currentTimeMillis()/1000);
+                    public void onClick(DialogInterface dialog, int which) {
+                        title = bookTitle.getText().toString();
+                        //Split authors from 1 string into an ArrayList
+                        author = bookAuthors.getText().toString();
+                        ArrayList<String> authors = new ArrayList<String>(Arrays.asList(author.split(",")));
+                        for(int i = 0; i < authors.size(); i++) {
+                            authors.set(i,authors.get(i).trim());
+                        }
 
 
-                //Getting current User
-                FirebaseUser tempUser = FirebaseAuth.getInstance().getCurrentUser();
-                User user = new User(tempUser.getEmail(), tempUser.getDisplayName());
+                        publishDate = bookPublishDate.getText().toString();
+                        publisher = bookPublisher.getText().toString();
+                        language = bookLanguage.getText().toString();
+                        subtitle = bookSubtitle.getText().toString();
+                        edition = bookEdition.getText().toString();
+                        binding = bookBinding.getText().toString();
+
+                        price = Double.valueOf(bookPrice.getText().toString());
+                        pages = Integer.valueOf(bookPages.getText().toString());
+                        Textbook newBook = new Textbook(title, subtitle, authors, publisher, publishDate, language, edition, pages, binding);
+
+                        //Getting Epoch Time
+                        int seconds = (int)(System.currentTimeMillis()/1000);
+
+                        //Getting current User
+                        FirebaseUser tempUser = FirebaseAuth.getInstance().getCurrentUser();
+                        User user = new User(tempUser.getEmail(), tempUser.getDisplayName());
+
+                        //add to database
+                        String key = dbReference.child("listings").push().getKey();
+                        String listingPath = "/listings/" + key;
+                        Listing newListing = new Listing(newBook, user, price, payment, seconds, key);
+                        dbReference.child(listingPath).setValue(newListing);
 
 
-
-
-
-
-                //add to database
-                String key = dbReference.child("listings").push().getKey();
-                String listingPath = "/listings/" + key;
-                Listing newListing = new Listing(newBook, user, price, payment, seconds, key);
-                dbReference.child(listingPath).setValue(newListing);
-
-
-                //Prepare Images for upload
-                Bitmap bitmap;
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                StorageReference path;
-                String imagePath;
-                for(int i = 0; i < 4; i++) {
-                    if(pics[i].getDrawable() != null) {
-                        pics[i].setDrawingCacheEnabled(true);
-                        pics[i].buildDrawingCache();
-                        bitmap = ((BitmapDrawable)pics[i].getDrawable()).getBitmap();
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                        byte[] data = baos.toByteArray();
-                        imagePath = "images/" + key + "_" + i + ".jpeg";
-                        path =  storageReference.child(imagePath);
-                        UploadTask uploadTask = path.putBytes(data);
-                        uploadTask.addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception exception) {
-                                // Handle unsuccessful uploads
+                        //Prepare Images for upload
+                        Bitmap bitmap;
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        StorageReference path;
+                        String imagePath;
+                        for(int i = 0; i < 4; i++) {
+                            if(pics[i].getDrawable() != null) {
+                                pics[i].setDrawingCacheEnabled(true);
+                                pics[i].buildDrawingCache();
+                                bitmap = ((BitmapDrawable)pics[i].getDrawable()).getBitmap();
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 10, baos);
+                                byte[] data = baos.toByteArray();
+                                imagePath = "images/" + key + "_" + i + ".jpeg";
+                                path =  storageReference.child(imagePath);
+                                UploadTask uploadTask = path.putBytes(data);
+                                uploadTask.addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception exception) {
+                                        // Handle unsuccessful uploads
+                                    }
+                                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                                        // ...
+                                    }
+                                });
                             }
-                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                                // ...
-                            }
-                        });
+                        }
+
+                        Toast.makeText(getView().getContext(),"Listing added",Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(getActivity(), TestingActivity.class);
+                        startActivity(intent);
+                        dialog.dismiss();
                     }
-                }
+                });
 
-                Toast.makeText(v.getContext(),"Listing added",Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(getActivity(), TestingActivity.class);
-                startActivity(intent);
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing
+                        dialog.dismiss();
+                    }
+                });
+                builder.create().show();
             }
         });
 
