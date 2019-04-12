@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,7 +74,7 @@ public abstract class ListingDetailActivity extends AppCompatActivity {
         titleView.setText(list.textbook.title);
         subtitleView.setText(list.textbook.subtitle);
 
-        Log.i(TAG,list.id);
+        //Log.i(TAG,list.id);
 
         //Setting up String for authors
         String temp = "";

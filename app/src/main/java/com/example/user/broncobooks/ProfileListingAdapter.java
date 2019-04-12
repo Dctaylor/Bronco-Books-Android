@@ -26,10 +26,14 @@ public class ProfileListingAdapter extends RecyclerView.Adapter<ProfileListingAd
 
         public ViewHolder(@NonNull View item, ListingAdapter.RecyclerItemListener listener) {
             super(item);
+            listen = listener;
+            item.setOnClickListener(this);
 
             title = (TextView)itemView.findViewById(R.id.titleView);
             price = (TextView)itemView.findViewById(R.id.priceView);
             sold = (TextView)itemView.findViewById(R.id.soldView);
+
+
         }
 
         @Override

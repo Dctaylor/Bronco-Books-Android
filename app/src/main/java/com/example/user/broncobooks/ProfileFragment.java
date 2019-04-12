@@ -149,8 +149,10 @@ public class ProfileFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot s:dataSnapshot.getChildren()){
                     Listing listing = s.getValue(Listing.class);
-                    if(listing.seller.displayName.compareTo(mAuth.getCurrentUser().getDisplayName()) == 0)
+                    if(listing.seller.displayName.compareTo(mAuth.getCurrentUser().getDisplayName()) == 0) {
+                        listing.id = s.getKey();
                         mListing.add(listing);
+                    }
                 }
 
                 mAdapter.notifyDataSetChanged();
