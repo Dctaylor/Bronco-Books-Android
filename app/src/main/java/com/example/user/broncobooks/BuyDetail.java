@@ -43,30 +43,58 @@ public class BuyDetail extends ListingDetailActivity implements PopupMenu.OnMenu
         contactMenu.show();
     }
 
+    public void showEmailMenu(View v) {
+        PopupMenu emailMenu = new PopupMenu(this, v);
+        emailMenu.setOnMenuItemClickListener(this);
+        emailMenu.inflate(R.menu.contact_emailmenu);
+        emailMenu.show();
+    }
+
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("plain/text");
-        intent.putExtra(Intent.EXTRA_EMAIL, ListingDetailActivity.list.seller.email);
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{ListingDetailActivity.list.seller.email});
+        String subject = ListingDetailActivity.list.textbook.title;
+        String body = "Hello " + ListingDetailActivity.list.seller.displayName + ",\n\n";
 
         switch(item.getItemId()) {
+            case R.id.contact_email:
+                showEmailMenu(findViewById(R.id.buttonBottomView));
+                return true;
+            case R.id.contact_text:
+                Toast.makeText(BuyDetail.this, "TODO: Implement Text Contact", Toast.LENGTH_LONG).show();
+                return true;
             case R.id.contact_price:
-                intent.putExtra(Intent.EXTRA_SUBJECT, "subject");
-                intent.putExtra(Intent.EXTRA_TEXT, "mail body");
-                startActivity(Intent.createChooser(intent, ""));
+                body = body + "Would you be willing to sell this textbook at a price of $ ?\n\nThanks,\n" + FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+                subject = subject + " Price";
+                intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+                intent.putExtra(Intent.EXTRA_TEXT, body);
+                startActivity(Intent.createChooser(intent, "Send message"));
                 return true;
             case R.id.contact_pic:
-                intent.putExtra(Intent.EXTRA_SUBJECT, "subject");
-                intent.putExtra(Intent.EXTRA_TEXT, "mail body");
+                body = body + "Can you please post more images of the book? I would like to get a better idea of its condition.\n\nThanks,\n" + FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+                subject = subject + " Pictures";
+                intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+                intent.putExtra(Intent.EXTRA_TEXT, body);
+                startActivity(Intent.createChooser(intent, ""));
+                return true;
+            case R.id.contact_payment:
+                body = body + "Would you be willing to accept the payment for this book through ?\n\nThanks,\n" + FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+                subject = subject + " Payment Method";
+                intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+                intent.putExtra(Intent.EXTRA_TEXT, body);
                 startActivity(Intent.createChooser(intent, ""));
                 return true;
             case R.id.contact_custom:
-                intent.putExtra(Intent.EXTRA_SUBJECT, "subject");
-                intent.putExtra(Intent.EXTRA_TEXT, "mail body");
+                intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+                intent.putExtra(Intent.EXTRA_TEXT, "");
                 startActivity(Intent.createChooser(intent, ""));
                 return true;
             default:
                 return false;
+
         }
+
     }
 }

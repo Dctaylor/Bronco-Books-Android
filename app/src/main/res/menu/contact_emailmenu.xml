@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/contact_price"
+        android:title="Discuss Price"/>
+
+    <item android:id="@+id/contact_pic"
+        android:title="More Images"/>
+
+    <item android:id="@+id/contact_payment"
+        android:title="Change Payment Method"/>
+
+    <item android:id="@+id/contact_custom"
+        android:title="Custom"/>
+
+
+</menu>
