@@ -1,6 +1,8 @@
 package com.example.user.broncobooks;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -53,6 +55,7 @@ public class BuyDetail extends ListingDetailActivity implements PopupMenu.OnMenu
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
         intent.setType("plain/text");
         intent.putExtra(Intent.EXTRA_EMAIL, new String[]{ListingDetailActivity.list.seller.email});
         String subject = ListingDetailActivity.list.textbook.title;
@@ -63,7 +66,14 @@ public class BuyDetail extends ListingDetailActivity implements PopupMenu.OnMenu
                 showEmailMenu(findViewById(R.id.buttonBottomView));
                 return true;
             case R.id.contact_text:
-                Toast.makeText(BuyDetail.this, "TODO: Implement Text Contact", Toast.LENGTH_LONG).show();
+                Intent smsIntent = new Intent(Intent.ACTION_VIEW);
+                smsIntent.setType("vnd.android-dir/mms-sms");
+                smsIntent.setData(Uri.parse("sms:" + ListingDetailActivity.list.seller.phoneNumber));
+                try{
+                    startActivity(smsIntent);
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(BuyDetail.this, "No Text Message Client available to use", Toast.LENGTH_LONG).show();
+                }
                 return true;
             case R.id.contact_price:
                 body = body + "Would you be willing to sell this textbook at a price of $ ?\n\nThanks,\n" + FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
