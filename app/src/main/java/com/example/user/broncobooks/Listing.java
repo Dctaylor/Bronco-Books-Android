@@ -1,5 +1,7 @@
 package com.example.user.broncobooks;
 
+import com.google.firebase.database.Exclude;
+
 import java.io.Serializable;
 
 public class Listing implements Serializable {
@@ -11,6 +13,7 @@ public class Listing implements Serializable {
 
     public User buyer;
     public boolean onSale;
+    public boolean purchaseConfirmed;
 
     public String id;
 
@@ -26,5 +29,11 @@ public class Listing implements Serializable {
         this.epochTimePosted = epochTimePosted;
         this.onSale = true;
         this.id = id;
+        purchaseConfirmed = false;
+    }
+
+    @Exclude
+    private void setBuyer(User buyerToSet) {
+        this.buyer = new User(buyerToSet.email, buyerToSet.displayName, buyerToSet.phoneNumber);
     }
 }

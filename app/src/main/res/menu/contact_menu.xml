@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/contact_price"
+        android:title="Contact Price"/>
+
+    <item android:id="@+id/contact_pic"
+        android:title="Contact Pictures"/>
+
+    <item android:id="@+id/contact_custom"
+        android:title="Contact Custom"/>
+
+
+</menu>

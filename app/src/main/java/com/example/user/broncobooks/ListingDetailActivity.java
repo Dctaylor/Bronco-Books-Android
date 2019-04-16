@@ -31,7 +31,7 @@ import java.util.List;
 
 public abstract class ListingDetailActivity extends AppCompatActivity {
     private static final String TAG= "DetailerView";
-    protected Listing list;
+    protected static Listing list;
     protected TextView titleView,subtitleView,authorView,publisherView;
     protected TextView pubDateView,languageView,editionView,paymentMethodView;
     protected TextView priceView,buttonTopView,numPageView,bindingView,postedView,buttonBottomView;
