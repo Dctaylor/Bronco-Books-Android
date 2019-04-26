@@ -8,10 +8,12 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:scaleType="fitXY"
-        android:layout_width="130dp"
+        android:layout_width="110dp"
         android:layout_height="110dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="15dp"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="7dp"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />

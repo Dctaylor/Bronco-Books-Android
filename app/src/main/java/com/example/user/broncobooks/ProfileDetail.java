@@ -13,6 +13,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class ProfileDetail extends ListingDetailActivity {
     private final String TAG = "DetailedBuyListing";
+    public static final String LIST_TAG = "ProfileList";
     private DatabaseReference dbRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +70,33 @@ public class ProfileDetail extends ListingDetailActivity {
 
             @Override
             public void onClick(View v) {
-                Toast.makeText(ProfileDetail.this,"TODO: Implement Edit Listing Button functionality", Toast.LENGTH_LONG).show();
+                AlertDialog.Builder builder =  new AlertDialog.Builder(ProfileDetail.this);
+
+                builder.setTitle("Confirmation");
+                builder.setMessage("You want to edit your listing? (You will be placed at the main page after editing.)");
+
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(ProfileDetail.this, ManualSellActivity.class);
+                        intent.putExtra(LIST_TAG,list);
+                        startActivityForResult(intent,2);//use startActivityFromResult so ManualSellForm can check if it was called by ProfileDetail
+                        dialog.dismiss();
+                    }
+                });
+
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        // Do nothing
+                        dialog.dismiss();
+                    }
+                });
+
+                builder.create().show();
+
             }
         });
     }

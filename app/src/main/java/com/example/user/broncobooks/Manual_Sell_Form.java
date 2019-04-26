@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -66,6 +67,8 @@ public class Manual_Sell_Form extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    Listing listingToEdit;
+
     String title, author, publishDate, publisher, language, subtitle, edition, binding, payment;
     int pages;
     double price;
@@ -81,6 +84,7 @@ public class Manual_Sell_Form extends Fragment {
     EditText bookPrice;
     EditText bookPages;
 
+    Spinner paymentChoice;
 
     Button submit;
     Button upload;
@@ -105,9 +109,6 @@ public class Manual_Sell_Form extends Fragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment Manual_Sell_Form.
      */
     // TODO: Rename and change types and number of parameters
@@ -123,6 +124,7 @@ public class Manual_Sell_Form extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        listingToEdit = null; //we want to set this to null ASAP
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -212,6 +214,74 @@ public class Manual_Sell_Form extends Fragment {
         }
     }
 
+    private String processAuthors(ArrayList<String> sList){
+        String ans = "";
+        if(sList != null){
+            for(String s: sList){
+                ans = ans + s + ", ";
+            }
+            if(sList.size() == 1){
+                ans = ans.substring(0,ans.length()-2);
+            }
+        }
+        return ans;
+    }
+
+    private int parsePaymentMethod(String method){
+        if(method.equals("Check"))
+            return 2;
+        if(method.equals("Cash"))
+            return 1;
+        return 0;
+    }
+
+    //Purpose: To handle filling
+    public void prefillFields(){
+        if(getActivity().getCallingActivity()!=null){
+
+            Intent intent = getActivity().getIntent();
+            if(getActivity().getCallingActivity().getClassName().equals(ProfileDetail.class.getName())){
+                TextView titleView = (TextView)getView().findViewById(R.id.textView);
+                titleView.setText("Edit Listing");
+                Toast.makeText(getActivity(),"Successfully completed source check :D",Toast.LENGTH_SHORT).show();
+                listingToEdit = (Listing)intent.getSerializableExtra(ProfileDetail.LIST_TAG);
+
+                String authorString = processAuthors(listingToEdit.textbook.authors);
+
+                bookTitle.setText(listingToEdit.textbook.title);
+                bookAuthors.setText(authorString);
+                bookPublishDate.setText(listingToEdit.textbook.publishedDate);
+                bookPublisher.setText(listingToEdit.textbook.publisher);
+                bookLanguage.setText(listingToEdit.textbook.language);
+                bookSubtitle.setText(listingToEdit.textbook.subtitle);
+                bookEdition.setText(listingToEdit.textbook.edition);
+                bookBinding.setText(listingToEdit.textbook.binding);
+                bookPrice.setText(Double.toString(listingToEdit.price));
+                bookPages.setText(Integer.toString(listingToEdit.textbook.pages));
+
+                paymentChoice.setSelection(parsePaymentMethod(listingToEdit.paymentMethod));
+
+                for(int x = 0; x < 4; x++){
+                    StorageReference imageRef = storageReference.child("images").child(listingToEdit.id + "_" + Integer.toString(x)+".jpeg");
+                    imageRef.getBytes(1*1024*1024)
+                            .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                @Override
+                                public void onSuccess(byte[] bytes) {
+                                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                    for(int i = 0; i < 4; i++) {
+                                        if(pics[i].getDrawable() == null) {
+                                            pics[i].setImageBitmap(bitmap);
+                                            return;
+                                        }
+                                    }
+                                }
+                            });
+
+                }
+            }
+        }
+    }
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         Spinner spinner = (Spinner) getView().findViewById(R.id.bookPaymentInput);
@@ -260,6 +330,9 @@ public class Manual_Sell_Form extends Fragment {
         pics[2] = pic3;
         pics[3] = pic4;
 
+        paymentChoice = (Spinner) getView().findViewById(R.id.bookPaymentInput);
+
+        prefillFields();
 
         submit = (Button) getView().findViewById(R.id.bookSubmitBtn);
         upload = (Button) getView().findViewById(R.id.bookPhotosBtn);
@@ -316,9 +389,38 @@ public class Manual_Sell_Form extends Fragment {
                         User user = new User(tempUser.getEmail(), tempUser.getDisplayName(), tempUser.getPhoneNumber());
 
                         //add to database
-                        String key = dbReference.child("listings").push().getKey();
+                        String key = "";
+                        if(listingToEdit == null) {
+                            key = dbReference.child("listings").push().getKey();
+                            Toast.makeText(getView().getContext(),"Listing is null",Toast.LENGTH_LONG).show();
+                        }
+                        else{
+                            key = listingToEdit.id;
+                            Toast.makeText(getView().getContext(),"Listing is not null",Toast.LENGTH_LONG).show();
+                        }
                         String listingPath = "/listings/" + key;
                         Listing newListing = new Listing(newBook, user, price, payment, seconds, key);
+
+                        if(listingToEdit != null){
+                            newListing.onSale = listingToEdit.onSale;
+                            newListing.purchaseConfirmed = listingToEdit.purchaseConfirmed;
+                            //Delete any images belonging to the pre-edited version
+                            for(int x = 0; x < 4; x++){
+                                StorageReference imageRef = storageReference.child("images").child(listingToEdit.id + "_" + Integer.toString(x)+".jpeg");
+                                imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(getView().getContext(),"Images successfully deleted",Toast.LENGTH_LONG);
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(getView().getContext(),"Images failed to delete",Toast.LENGTH_LONG);
+                                    }
+                                });
+
+                            }
+                        }
                         dbReference.child(listingPath).setValue(newListing);
 
 
@@ -352,7 +454,7 @@ public class Manual_Sell_Form extends Fragment {
                             }
                         }
 
-                        Toast.makeText(getView().getContext(),"Listing added",Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getView().getContext(),"Listing added",Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(getActivity(), TestingActivity.class);
                         startActivity(intent);
                         dialog.dismiss();
