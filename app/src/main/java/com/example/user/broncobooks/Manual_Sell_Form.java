@@ -386,7 +386,7 @@ public class Manual_Sell_Form extends Fragment {
 
                         //Getting current User
                         FirebaseUser tempUser = FirebaseAuth.getInstance().getCurrentUser();
-                        User user = new User(tempUser.getEmail(), tempUser.getDisplayName(), tempUser.getPhoneNumber());
+                        User user = new User(tempUser.getEmail(), tempUser.getDisplayName(), LoginActivity.userPhoneNumber);
 
                         //add to database
                         String key = "";

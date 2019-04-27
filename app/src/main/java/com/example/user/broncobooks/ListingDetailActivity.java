@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public abstract class ListingDetailActivity extends AppCompatActivity {
+public abstract class ListingDetailActivity extends AppCompatActivity implements View.OnClickListener{
     private static final String TAG= "DetailerView";
     protected static Listing list;
     protected TextView titleView,subtitleView,authorView,publisherView;

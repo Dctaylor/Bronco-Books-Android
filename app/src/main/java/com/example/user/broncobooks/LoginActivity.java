@@ -1,12 +1,16 @@
 package com.example.user.broncobooks;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -29,6 +33,8 @@ public class LoginActivity extends AppCompatActivity{
     private static final int RC_SIGN_IN = 9001;
     private static final String TAG = "GoogleActivity";
     static GoogleSignInClient mGoogleSignInClient;
+    static boolean havePhone = false;
+    static String userPhoneNumber;
 
     FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -56,7 +62,7 @@ public class LoginActivity extends AppCompatActivity{
         googleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signIn();
+                getPhone();
             }
         });
 
@@ -86,12 +92,34 @@ public class LoginActivity extends AppCompatActivity{
 
     }
 
+    private void getPhone() {
+        if(havePhone == false) {
+            final EditText phoneInput = new EditText(this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+            builder.setTitle("Your Phone Number");
+            phoneInput.setInputType(InputType.TYPE_CLASS_PHONE);
+            phoneInput.setHint("0001112222");
+            builder.setView(phoneInput);
+            // Set up the buttons
+            builder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    userPhoneNumber = phoneInput.getText().toString();
+                    signIn();
+                }
+            });
+            builder.show();
+            havePhone = true;
+        }
+    }
+
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     private void signOut() {
+        havePhone = false;
         mAuth.signOut();
         mGoogleSignInClient.signOut();
     }

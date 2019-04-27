@@ -33,7 +33,7 @@ public class Listing implements Serializable {
     }
 
     @Exclude
-    private void setBuyer(User buyerToSet) {
+    public void setBuyer(User buyerToSet) {
         this.buyer = new User(buyerToSet.email, buyerToSet.displayName, buyerToSet.phoneNumber);
     }
 }
