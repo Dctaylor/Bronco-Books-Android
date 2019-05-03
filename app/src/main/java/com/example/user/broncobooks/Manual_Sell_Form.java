@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -243,7 +244,6 @@ public class Manual_Sell_Form extends Fragment {
             if(getActivity().getCallingActivity().getClassName().equals(ProfileDetail.class.getName())){
                 TextView titleView = (TextView)getView().findViewById(R.id.textView);
                 titleView.setText("Edit Listing");
-                Toast.makeText(getActivity(),"Successfully completed source check :D",Toast.LENGTH_SHORT).show();
                 listingToEdit = (Listing)intent.getSerializableExtra(ProfileDetail.LIST_TAG);
 
                 String authorString = processAuthors(listingToEdit.textbook.authors);
@@ -280,6 +280,63 @@ public class Manual_Sell_Form extends Fragment {
                 }
             }
         }
+    }
+
+    //dealing with confirmation for deleting photo
+    public void deleteImages(final int index){
+        //If the user is clicking on an image that doesn't exist
+        if(pics[index].getDrawable() == null)
+            return;
+
+        AlertDialog.Builder builder =  new AlertDialog.Builder(getContext());
+
+        builder.setTitle("Confirmation");
+        builder.setMessage("Are you sure you want to delete that image?");
+
+
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Bitmap bmap;
+                ByteArrayOutputStream baos;
+                for (int i = index; i < 3; i++){
+
+                    //if the next picture doesn't exist, we know this is the final picture
+                    if(pics[i+1].getDrawable() == null){
+                        pics[i].setImageBitmap(null);
+                        pics[i].setImageDrawable(null);
+                        dialog.dismiss();
+                        return;
+                    }
+                    //Getting past this if statement means there is another image to process after this one
+
+                    //Get the image bitmap of the picture in the next index
+                    pics[i+1].setDrawingCacheEnabled(true);
+                    pics[i+1].buildDrawingCache();
+                    bmap = ((BitmapDrawable)pics[i+1].getDrawable()).getBitmap();
+                    baos = new ByteArrayOutputStream();
+                    Log.i("RANDOMSTRING", Boolean.toString(pics[i+1].getDrawable() == null));
+                    bmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    byte[] data = baos.toByteArray();
+
+                    //assign to this slot the image bitmap of the following slot
+                    pics[i].setImageBitmap(BitmapFactory.decodeByteArray(data, 0, data.length));
+
+                }
+                pics[3].setImageBitmap(null);
+                pics[3].setImageDrawable(null);
+                dialog.dismiss();
+            }
+        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.create().show();
+
     }
 
     @Override
@@ -330,6 +387,32 @@ public class Manual_Sell_Form extends Fragment {
         pics[2] = pic3;
         pics[3] = pic4;
 
+        pic1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteImages(0);
+            }
+        });
+
+        pic2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteImages(1);
+            }
+        });
+        pic3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteImages(2);
+            }
+        });
+
+        pic4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteImages(3);
+            }
+        });
         paymentChoice = (Spinner) getView().findViewById(R.id.bookPaymentInput);
 
         prefillFields();
@@ -429,8 +512,11 @@ public class Manual_Sell_Form extends Fragment {
                         ByteArrayOutputStream baos;
                         StorageReference path;
                         String imagePath;
-                        Toast.makeText(getView().getContext(),Integer.toString(pics.length),Toast.LENGTH_LONG).show();
                         for(int i = 0; i < 4; i++) {
+                            imagePath = "images/" + key + "_" + i + ".jpeg";
+                            path =  storageReference.child(imagePath);
+
+                                path.delete();
                             if(pics[i].getDrawable() != null) {
                                 pics[i].setDrawingCacheEnabled(true);
                                 pics[i].buildDrawingCache();
@@ -438,8 +524,6 @@ public class Manual_Sell_Form extends Fragment {
                                 baos = new ByteArrayOutputStream();
                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 10, baos);
                                 byte[] data = baos.toByteArray();
-                                imagePath = "images/" + key + "_" + i + ".jpeg";
-                                path =  storageReference.child(imagePath);
                                 UploadTask uploadTask = path.putBytes(data);
                                 uploadTask.addOnFailureListener(new OnFailureListener() {
                                     @Override
