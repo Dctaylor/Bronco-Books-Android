@@ -62,7 +62,14 @@ public class ProfileListingAdapter extends RecyclerView.Adapter<ProfileListingAd
 
         viewHolder.title.setText(list.textbook.title);
         viewHolder.price.setText(String.format("$%2.2f",list.price));
-        viewHolder.sold.setText(list.onSale?"On Sale" : "Sold");
+        if(!list.onSale && list.buyer != null && !list.purchaseConfirmed)
+            viewHolder.sold.setText("Purchase Pending");
+        else if(!list.onSale && list.purchaseConfirmed)
+            viewHolder.sold.setText("Sold");
+        else if(!list.onSale && !list.purchaseConfirmed && list.buyer == null)
+            viewHolder.sold.setText("Removed");
+        else
+            viewHolder.sold.setText("Sold");
     }
 
     @Override
