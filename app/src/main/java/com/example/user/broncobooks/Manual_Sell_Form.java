@@ -316,7 +316,6 @@ public class Manual_Sell_Form extends Fragment {
                     pics[i+1].buildDrawingCache();
                     bmap = ((BitmapDrawable)pics[i+1].getDrawable()).getBitmap();
                     baos = new ByteArrayOutputStream();
-                    Log.i("RANDOMSTRING", Boolean.toString(pics[i+1].getDrawable() == null));
                     bmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                     byte[] data = baos.toByteArray();
 
