@@ -386,7 +386,7 @@ public class Manual_Sell_Form extends Fragment {
 
                         //Getting current User
                         FirebaseUser tempUser = FirebaseAuth.getInstance().getCurrentUser();
-                        User user = new User(tempUser.getEmail(), tempUser.getDisplayName(), tempUser.getPhoneNumber());
+                        User user = new User(tempUser.getEmail(), tempUser.getDisplayName(), LoginActivity.userPhoneNumber);
 
                         //add to database
                         String key = "";
@@ -426,14 +426,16 @@ public class Manual_Sell_Form extends Fragment {
 
                         //Prepare Images for upload
                         Bitmap bitmap;
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        ByteArrayOutputStream baos;
                         StorageReference path;
                         String imagePath;
+                        Toast.makeText(getView().getContext(),Integer.toString(pics.length),Toast.LENGTH_LONG).show();
                         for(int i = 0; i < 4; i++) {
                             if(pics[i].getDrawable() != null) {
                                 pics[i].setDrawingCacheEnabled(true);
                                 pics[i].buildDrawingCache();
                                 bitmap = ((BitmapDrawable)pics[i].getDrawable()).getBitmap();
+                                baos = new ByteArrayOutputStream();
                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 10, baos);
                                 byte[] data = baos.toByteArray();
                                 imagePath = "images/" + key + "_" + i + ".jpeg";
