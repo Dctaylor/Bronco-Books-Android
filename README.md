@@ -11,9 +11,9 @@ This application provides a centralized e-commerce platform for college students
 * Android Studio 3.5 (Java 7)
 
 ## Images
-![Sign In Page](https://github.com/Dctaylor/Bronco-Books-Android/images/LoginPage.png)
-![Listings Page](https://github.com/Dctaylor/Bronco-Books-Android/images/Listings.png)
-![Create a Listing](https://github.com/Dctaylor/Bronco-Books-Android/images/CreateListing.png)
-![Manually Create a Listing](https://github.com/Dctaylor/Bronco-Books-Android/images/ManualListing.png)
-![Profile Page](https://github.com/Dctaylor/Bronco-Books-Android/images/Profile Page.png)
+![Sign In Page](https://github.com/Dctaylor/Bronco-Books-Android/tree/master/images/LoginPage.png)
+![Listings Page](https://github.com/Dctaylor/Bronco-Books-Android/tree/master/images/Listings.png)
+![Create a Listing](https://github.com/Dctaylor/Bronco-Books-Android/tree/master/images/CreateListing.png)
+![Manually Create a Listing](https://github.com/Dctaylor/Bronco-Books-Android/tree/master/images/images/ManualListing.png)
+![Profile Page](https://github.com/Dctaylor/Bronco-Books-Android/tree/master/images/Profile_Page.png)
 
