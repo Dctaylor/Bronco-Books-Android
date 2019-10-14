@@ -15,5 +15,5 @@ This application provides a centralized e-commerce platform for college students
 ![Listings Page](./images/Listings.PNG)
 ![Create a Listing](./images/CreateListing.PNG)
 ![Manually Create a Listing](./images/ManualListing.PNG)
-![Profile Page](./images/Profile_Page.PNG)
+![Profile Page](./images/ProfilePage.PNG)
 
